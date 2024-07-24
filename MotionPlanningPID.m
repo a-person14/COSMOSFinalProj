@@ -15,7 +15,7 @@ Vx = [1];
 Vy = [1];
 
 %step size
-h = .01;
+h = .1;
 
 %PID x,y gains
 Kpx = 2; Kpy = 2; %4,5,4
@@ -31,7 +31,7 @@ for i = 1:length(Setpoints)
     %error initialization
     xError = Setpoints(i,1) - Px(1);
     yError = Setpoints(i,2) - Py(1);
-    for k = 1:400 %while loop doesnt work (want to do based on if error is < .0001, move on or do it w time?)
+    for k = 1:50 %while loop doesnt work (want to do based on if error is < .0001, move on or do it w time?)
         xIntegral = xIntegral + (Setpoints(i,1) - Px(k)) * h; %integral of the error over time (Setpoints(i,1) - Px(k) here because i wanted to keep prev error in derivation)
         xDerivative = ((Setpoints(i,1) - Px(k)) - xError) / h; %derivative of error in regards to time
         xError = Setpoints(i,1) - Px(k);
@@ -58,14 +58,15 @@ for i = 1:length(Setpoints)
     end 
     % plot(Px,Py)
     % hold on
-     Px = [Px(400)];
-     Py = [Py(400)];
-     Vx = [Vx(400)];
-     Vy = [Vy(400)];
-    % plot(Px, "green")
-    % hold on
-    % plot(Py, "blue")
-    % xlabel("iterations")
-    % ylabel("x or y position")
-    % hold on
+     Px = [Px(50)];
+     Py = [Py(50)];
+     Vx = [Vx(50)];
+     Vy = [Vy(50)];
+     % plot(Px, "green")
+     % hold on
+     % plot(Py, "blue")
+     % xlabel("iterations")
+     % ylabel("x or y position")
+     % hold on
+
 end
