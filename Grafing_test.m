@@ -13,29 +13,31 @@ vex = [0 0.5 -0.5 0; 0 -1/sqrt(3) -1/sqrt(3) 0]; % THe vessel's vertecies on the
 xx= 0
 yy= -10
 ex = [xx,yy] % the main robot
-ex_rotation = 90 % the robot's rotation
+ex_rotation = 45 % the robot's rotation
 ex_rad = deg2rad(ex_rotation) %converts robot's rotation in degrees to radians
 
+front = [xx + cos(ex_rotation), yy + sin(ex_rotation)]
 
 sensfldist = 2 %sensorfl offset from main body
-sensfltheta = 90  %sensorfl offset angle
-sensflthetarad = deg2rad(sensfltheta); % converts offset angle to radians
-sensorflx = xx + sensfldist * cos(deg2rad(sensfltheta + ex_rotation)); %robot's sensow front left
-sensorfly = yy + sensfldist * sin(deg2rad(sensfltheta + ex_rotation));
+sensfltheta = 45  %sensorfl offset angle
+sensorflx = xx + sensfldist * cos(sensfltheta + ex_rotation); %robot's sensow front left
+sensorfly = yy + sensfldist * sin(sensfltheta + ex_rotation);
+% scatter(sensorflx, sensorfly, "filled", "b") does not need to be used??
+
 
 sensorfdist = 2 %does sensor front
-sensorftheta = 45
-sensorfthetarad = deg2rad(sensorftheta)
-sensorfx = xx + sensorfdist * cos(deg2rad(sensorftheta + ex_rotation));
-sensorfy = yy + sensorfdist * sin(deg2rad(sensorftheta+ ex_rotation));
+sensorfx = xx + sensorfdist * cos(ex_rotation);
+sensorfy = yy + sensorfdist * sin(ex_rotation);
+% scatter(sensorfx, sensorfy, "filled" , 'g')
+
 
 sensorfrdist = 2
-sensorfrtheta = 0
-sensorfrthetarad = deg2rad(sensorfrtheta); % the robot's sensor front right
-sensorfrx = xx + sensorfrdist * cos(deg2rad(sensorfrtheta + ex_rotation));
-sensorfry = yy + sensorfdist * sin(deg2rad(sensorfrtheta + ex_rotation));
+sensorfrtheta = -45
+sensorfrx = xx + sensorfrdist * cos(sensorfrtheta+ ex_rotation);
+sensorfry = yy + sensorfdist * sin(sensorfrtheta+ ex_rotation);
+% scatter(sensorfrx, sensorfry, 'filled', 'o')
 
-front = [xx + cos(ex_rotation), yy + sin(ex_rotation)]
+
 
 % Define obstacles as inequalities in the form x <= f(y)
 obstacles = {
@@ -115,6 +117,7 @@ in_obstacle = false;
 for i = 1:length(obstacles)
     if obstacles{i}(-10, 0)
         in_obstacle = true;
+       
         break;
     end
 end
@@ -125,10 +128,13 @@ else
     disp('(0, 0) is not in an obstacle.');
 end
 
-plot(xx,yy, front(1), front(2), )
-scatter(sensorflx, sensorfly, "filled", "b")
-scatter(sensorfx, sensorfy, "filled" , 'g')
-scatter(sensorfrx, sensorfry, 'filled', 'o')
+
+ scatter(sensorfx,sensorfy, 'filled');
+ scatter(sensorfrx,sensorfry, 'filled');
+ scatter(sensorflx,sensorfly, 'filled');
+plot([xx,front(1)], [yy, front(2)], 'LineWidth', 2);
+
+
 
 wab = 0
 % while wab < 1
