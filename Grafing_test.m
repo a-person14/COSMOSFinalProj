@@ -4,17 +4,39 @@ clear;
 clf
 
 % Define maze boundaries
+
 xmin = -10;
 xmax = 10;
 ymin = -10;
 ymax = 10;
+vex = [0 0.5 -0.5 0; 0 -1/sqrt(3) -1/sqrt(3) 0]; % THe vessel's vertecies on the plot
 xx= 0
 yy= -10
 ex = [xx,yy] % the main robot
-ex_rotation = 0 % the robot's rotation
-sensorfl = [xx-1,yy+1] %robot's sensow front left
-sensorf = [xx, yy+1] %the robot's sensor front
-sensorfr = [xx+1,yy+1] % the robot's sensor front right
+ex_rotation = 90 % the robot's rotation
+ex_rad = deg2rad(ex_rotation) %converts robot's rotation in degrees to radians
+
+
+sensfldist = 2 %sensorfl offset from main body
+sensfltheta = 90  %sensorfl offset angle
+sensflthetarad = deg2rad(sensfltheta); % converts offset angle to radians
+sensorflx = xx + sensfldist * cos(deg2rad(sensfltheta + ex_rotation)); %robot's sensow front left
+sensorfly = yy + sensfldist * sin(deg2rad(sensfltheta + ex_rotation));
+
+sensorfdist = 2 %does sensor front
+sensorftheta = 45
+sensorfthetarad = deg2rad(sensorftheta)
+sensorfx = xx + sensorfdist * cos(deg2rad(sensorftheta + ex_rotation));
+sensorfy = yy + sensorfdist * sin(deg2rad(sensorftheta+ ex_rotation));
+
+sensorfrdist = 2
+sensorfrtheta = 0
+sensorfrthetarad = deg2rad(sensorfrtheta); % the robot's sensor front right
+sensorfrx = xx + sensorfrdist * cos(deg2rad(sensorfrtheta + ex_rotation));
+sensorfry = yy + sensorfdist * sin(deg2rad(sensorfrtheta + ex_rotation));
+
+front = [xx + cos(ex_rotation), yy + sin(ex_rotation)]
+
 % Define obstacles as inequalities in the form x <= f(y)
 obstacles = {
 %    @(x,y) y <= x.^2 - 5;                 % Example: parabolic obstacle
@@ -103,35 +125,36 @@ else
     disp('(0, 0) is not in an obstacle.');
 end
 
-scatter(sensorfl(1), sensorfl(2), "filled")
-scatter(sensorf(1), sensorf(2), "filled")
-scatter(sensorfr(1), sensorfr(2), 'filled')
+plot(xx,yy, front(1), front(2), )
+scatter(sensorflx, sensorfly, "filled", "b")
+scatter(sensorfx, sensorfy, "filled" , 'g')
+scatter(sensorfrx, sensorfry, 'filled', 'o')
 
 wab = 0
-while wab < 1
-    if obstacles{i}(sensorfr(1), sensorfr(2))
-        in_obstacle = true;
-        break;
-    end
-    if in_obstacle == true
-        disp("sensor front right is detecting obstical");
-    end
-    if obstacles{i}(sensorf(1), sensorf(2))
-        in_obstacle = true;
-        break;
-    end
-    if in_obstacle == true
-        disp("sensor front  is detecting obstical");
-    end
-    if obstacles{i}(sensorfl(1), sensorfl(2))
-        in_obstacle = true;
-        break;
-    end
-    if in_obstacle == true
-        disp("sensor front left is detecting obstical");
-    end
-
-end
+% while wab < 1
+%     if obstacles{i}(sensorfr(1), sensorfr(2))
+%         in_obstacle = true;
+%         break;
+%     end
+%     if in_obstacle == true
+%         disp("sensor front right is detecting obstical");
+%     end
+%     if obstacles{i}(sensorf(1), sensorf(2))
+%         in_obstacle = true;
+%         break;
+%     end
+%     if in_obstacle == true
+%         disp("sensor front  is detecting obstical");
+%     end
+%     if obstacles{i}(sensorflx, sensorfly)
+%         in_obstacle = true;
+%         break;
+%     end
+%     if in_obstacle == true
+%         disp("sensor front left is detecting obstical");
+%     end
+% 
+% end
 hold on
 
 
@@ -175,9 +198,6 @@ hold on
 % 
 % end
 
-\
-\\
-
 
 
 % % % % % % % % % % %  THIS IS HOW TO ACCOUNT FOR ROTATION AND STUF
@@ -214,3 +234,36 @@ hold on
 % % % % % % % % % % % hold off
 % % % % % % % % % % % 
 % % % % % % % % % % % axis equal
+
+
+
+
+
+
+
+
+
+%% make the vessel in matlab, its a triangel
+% % % % % Define the vertices of the triangle centered at the origin
+% % % % triangle = [0 0.5 -0.5 0; 0 -1/sqrt(3) -1/sqrt(3) 0]; % Triangle vertices
+% % % % 
+% % % % % Define the rotation angle in degrees
+% % % % angle_deg = 30;
+% % % % angle_rad = deg2rad(angle_deg); % Convert angle to radians
+% % % % 
+% % % % % Create the rotation matrix
+% % % % R = [cos(angle_rad) -sin(angle_rad); sin(angle_rad) cos(angle_rad)];
+% % % % 
+% % % % % Rotate and translate the triangle
+% % % % rotated_triangle = R * triangle;
+% % % % x = rotated_triangle(1, :);
+% % % % y = rotated_triangle(2, :);
+% % % % 
+% % % % % Plot the rotated triangle as a scatter point
+% % % % figure;
+% % % % fill(x, y, 'b'); % 'b' for blue color, you can choose any color
+% % % % axis equal;
+% % % % grid on;
+% % % % title('Rotated Triangle Scatter Point');
+% % % % xlabel('X-axis');
+% % % % ylabel('Y-axis');
