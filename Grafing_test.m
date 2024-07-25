@@ -3,18 +3,58 @@ clear;
 %close all;
 clf
 
-% Define maze boundaries
+
+
+
+
+
+
+
+% the stuff below is all the variables and stuff
+
 xmin = -10;
 xmax = 10;
 ymin = -10;
 ymax = 10;
+vex = [0 0.5 -0.5 0; 0 -1/sqrt(3) -1/sqrt(3) 0]; % THe vessel's vertecies on the plot
 xx= 0
 yy= -10
 ex = [xx,yy] % the main robot
 ex_rotation = 0 % the robot's rotation
-sensorfl = [xx-1,yy+1] %robot's sensow front left
-sensorf = [xx, yy+1] %the robot's sensor front
-sensorfr = [xx+1,yy+1] % the robot's sensor front right
+ex_rad = deg2rad(ex_rotation) %converts robot's rotation in degrees to radians
+
+front = [xx + cos(ex_rotation), yy + sin(ex_rotation)]
+
+sensfldist = 2 %sensorfl offset from main body
+sensfltheta = 45  %sensorfl offset angle
+sensorflx = xx + sensfldist * cos(sensfltheta + ex_rotation); %robot's sensow front left
+sensorfly = yy + sensfldist * sin(sensfltheta + ex_rotation);
+% scatter(sensorflx, sensorfly, "filled", "b") does not need to be used??
+
+
+sensorfdist = 2 %does sensor front
+sensorfx = xx + sensorfdist * cos(ex_rotation);
+sensorfy = yy + sensorfdist * sin(ex_rotation);
+% scatter(sensorfx, sensorfy, "filled" , 'g')
+
+
+sensorfrdist = 2
+sensorfrtheta = -45
+sensorfrx = xx + sensorfrdist * cos(sensorfrtheta+ ex_rotation);
+sensorfry = yy + sensorfrdist * sin(sensorfrtheta+ ex_rotation);
+% scatter(sensorfrx, sensorfry, 'filled', 'o')
+
+
+
+
+
+
+
+
+
+
+
+
 % Define obstacles as inequalities in the form x <= f(y)
 obstacles = {
 %    @(x,y) y <= x.^2 - 5;                 % Example: parabolic obstacle
@@ -87,51 +127,75 @@ xlim([xmin, xmax]);
 ylim([ymin, ymax]);
 title('COSMOS 24 Cluster 11 Maze');
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %% Example of how to check if a point is in an obstacle
 % Check if (0, 0) is in an obstacle
 in_obstacle = false;
 for i = 1:length(obstacles)
     if obstacles{i}(-10, 0)
         in_obstacle = true;
+       
         break;
     end
 end
 
-if in_obstacle
+if in_obstacle %this tells that if an item is in a n obtancle, then it says that it is in an obstace
     disp('(0, 0) is in an obstacle.');
 else
     disp('(0, 0) is not in an obstacle.');
 end
 
-scatter(sensorfl(1), sensorfl(2), "filled")
-scatter(sensorf(1), sensorf(2), "filled")
-scatter(sensorfr(1), sensorfr(2), 'filled')
+function scatter_sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+ 
 
-wab = 0
-while wab < 1
-    if obstacles{i}(sensorfr(1), sensorfr(2))
-        in_obstacle = true;
-        break;
-    end
-    if in_obstacle == true
-        disp("sensor front right is detecting obstical");
-    end
-    if obstacles{i}(sensorf(1), sensorf(2))
-        in_obstacle = true;
-        break;
-    end
-    if in_obstacle == true
-        disp("sensor front  is detecting obstical");
-    end
-    if obstacles{i}(sensorfl(1), sensorfl(2))
-        in_obstacle = true;
-        break;
-    end
-    if in_obstacle == true
-        disp("sensor front left is detecting obstical");
-    end
+ front = [xx + cos(ex_rotation), yy + sin(ex_rotation)];
 
+
+
+sensfldist = 2; %sensorfl offset from main body;
+sensfltheta = 45;  %sensorfl offset angle;
+sensorflx = xx + sensfldist * cos(sensfltheta + ex_rotation); %robot's sensow front left
+sensorfly = yy + sensfldist * sin(sensfltheta + ex_rotation);
+% scatter(sensorflx, sensorfly, "filled", "b") does not need to be used??
+
+
+sensorfdist = 2; %does sensor front
+sensorfx = xx + sensorfdist * cos(ex_rotation);
+sensorfy = yy + sensorfdist * sin(ex_rotation);
+% scatter(sensorfx, sensorfy, "filled" , 'g')
+
+
+sensorfrdist = 2;
+sensorfrtheta = -45;
+sensorfrx = xx + sensorfrdist * cos(sensorfrtheta+ ex_rotation);
+sensorfry = yy + sensorfrdist * sin(sensorfrtheta+ ex_rotation);
+% scatter(sensorfrx, sensorfry, 'filled', 'o')
+
+ scatter(sensorfx, sensorfy );
+ scatter(sensorfrx, sensorfry );
+ scatter(sensorflx, sensorfly);
+ plot([xx,front(1)], [yy, front(2)], 'LineWidth', 2);
 end
+
+Sensor = @scatter_sensor;
+
 hold on
 
 
@@ -140,77 +204,47 @@ hold on
 
 
 
+qwe = 1
+%the code below makes the bobot move using WASD
+while qwe > 0
+    % Wait for a key press
+    waitforbuttonpress;
+
+    % Get the current character
+    keyPressed = get(gcf, 'CurrentCharacter');
+
+    % Display the key pressed
+   
+    ex_rotation = 0;
+    % Break the loop if the 'q' key is pressed
+    if keyPressed == 'w'
+        ex_rotation = 900;
+        yy = yy + 0.25;
+        scatter(xx,yy,'filled', 'b');
+        Sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+    elseif keyPressed == 'a'
+        ex_rotation = 600;
+        xx = xx - .25;
+        scatter(xx,yy, 'filled', 'b');
+        Sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+    elseif keyPressed == 'd'
+        ex_rotation = 0;
+        xx = xx + .25;
+        scatter(xx,yy, "filled", 'b');
+        Sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+    elseif keyPressed == 's'
+        ex_rotation = 300;
+        yy = yy - .25;
+        scatter(xx,yy, "filled", 'b');
+        Sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+    end
 
 
 
-% qwe = 1
-% the code below makes the bobot move using WASD
-% while qwe > 0
-%     % Wait for a key press
-%     waitforbuttonpress;
-% 
-%     % Get the current character
-%     keyPressed = get(gcf, 'CurrentCharacter');
-% 
-%     % Display the key pressed
-%     disp(['Key pressed: ', keyPressed]);
-% 
-%     % Break the loop if the 'q' key is pressed
-%     if keyPressed == 'w'
-%         yy = yy + 1
-%         scatter(xx,yy,'filled', 'b')
-%     elseif keyPressed == 'a'
-%         xx = xx - 1
-%         scatter(xx,yy, 'filled', 'b')
-% 
-%     elseif keyPressed == 'd'
-%         xx = xx + 1
-%         scatter(xx,yy, "filled", 'b')
-%     elseif keyPressed == 's'
-%         yy = yy - 1
-%         scatter(xx,yy, "filled", 'b')
-%     end
-% 
-% 
-% 
-% end
-
-\
-\\
+end
 
 
 
-% % % % % % % % % % %  THIS IS HOW TO ACCOUNT FOR ROTATION AND STUF
-% EHHEHEHAHAHAHAHAHAHAHAHHAHAHAHAHAhAHAHAHHAHAmUAhaHAHAHAHAHHAhAhAHAhAhAHA
-% % % % % % % % % % % % Main point coordinates
-% % % % % % % % % % % main_x = 0;
-% % % % % % % % % % % main_y = 0;   
-% % % % % % % % % % % 
-% % % % % % % % % % % % Main point rotation (angle in degrees)
-% % % % % % % % % % % rotation_angle = 45; % Example rotation angle
-% % % % % % % % % % % 
-% % % % % % % % % % % % Offset distance and angle from the main point
-% % % % % % % % % % % offset_distance = 2;
-% % % % % % % % % % % offset_angle = 30; % Angle in degrees
-% % % % % % % % % % % 
-% % % % % % % % % % % % Convert offset angle to radians
-% % % % % % % % % % % offset_angle_rad = deg2rad(offset_angle);
-% % % % % % % % % % % 
-% % % % % % % % % % % % Calculate subpoint coordinates
-% % % % % % % % % % % sub_x = main_x + offset_distance * cos(deg2rad(rotation_angle + offset_angle));
-% % % % % % % % % % % sub_y = main_y + offset_distance * sin(deg2rad(rotation_angle + offset_angle));
-% % % % % % % % % % % 
-% % % % % % % % % % % % Plot main point
-% % % % % % % % % % % plot(main_x, main_y, 'ro'); % Red circle for main point
-% % % % % % % % % % % 
-% % % % % % % % % % % hold on
-% % % % % % % % % % % 
-% % % % % % % % % % % % Plot subpoint
-% % % % % % % % % % % plot(sub_x, sub_y, 'bo'); % Blue circle for subpoint
-% % % % % % % % % % % 
-% % % % % % % % % % % % Add arrow to show the offset
-% % % % % % % % % % % quiver(main_x, main_y, sub_x - main_x, sub_y - main_y, 0, 'b', 'LineWidth', 1.5);
-% % % % % % % % % % % 
-% % % % % % % % % % % hold off
-% % % % % % % % % % % 
-% % % % % % % % % % % axis equal
+
+
+
