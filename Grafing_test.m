@@ -17,8 +17,12 @@ xmax = 10;
 ymin = -10;
 ymax = 10;
 vex = [0 0.5 -0.5 0; 0 -1/sqrt(3) -1/sqrt(3) 0]; % THe vessel's vertecies on the plot
-xx= 0
-yy= -10
+xx= 0;
+yy= -10;
+
+cord = [xx; yy]
+bord = 1
+
 ex = [xx,yy] % the main robot
 ex_rotation = 0 % the robot's rotation
 ex_rad = deg2rad(ex_rotation) %converts robot's rotation in degrees to radians
@@ -162,27 +166,29 @@ else
     disp('(0, 0) is not in an obstacle.');
 end
 
-function scatter_sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
- 
+function scatter_sensor( obstacles, i, sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+ in_obstacle_l = false;
+ in_obstacle_f = false;
+ in_obstacle_r = false;
 
  front = [xx + cos(ex_rotation), yy + sin(ex_rotation)];
 
 
 
-sensfldist = 2; %sensorfl offset from main body;
+sensfldist = 1; %sensorfl offset from main body;
 sensfltheta = 45;  %sensorfl offset angle;
 sensorflx = xx + sensfldist * cos(sensfltheta + ex_rotation); %robot's sensow front left
 sensorfly = yy + sensfldist * sin(sensfltheta + ex_rotation);
 % scatter(sensorflx, sensorfly, "filled", "b") does not need to be used??
 
 
-sensorfdist = 2; %does sensor front
+sensorfdist = 1; %does sensor front
 sensorfx = xx + sensorfdist * cos(ex_rotation);
 sensorfy = yy + sensorfdist * sin(ex_rotation);
 % scatter(sensorfx, sensorfy, "filled" , 'g')
 
 
-sensorfrdist = 2;
+sensorfrdist = 1;
 sensorfrtheta = -45;
 sensorfrx = xx + sensorfrdist * cos(sensorfrtheta+ ex_rotation);
 sensorfry = yy + sensorfrdist * sin(sensorfrtheta+ ex_rotation);
@@ -192,6 +198,37 @@ sensorfry = yy + sensorfrdist * sin(sensorfrtheta+ ex_rotation);
  scatter(sensorfrx, sensorfry );
  scatter(sensorflx, sensorfly);
  plot([xx,front(1)], [yy, front(2)], 'LineWidth', 2);
+
+
+
+
+    for i = 1:length(obstacles)
+        if obstacles{i}(sensorflx, sensorfly)
+            in_obstacle_l = true;
+        end
+        if obstacles{i}(sensorfx, sensorfy)
+            in_obstacle_f = true;
+        end
+        if obstacles{i}(sensorfrx, sensorfry)
+            in_obstacle_r = true;
+        end
+    end
+
+
+
+      if in_obstacle_l
+        disp('Sensor front left is detecting an obstacle');
+    end
+    if in_obstacle_f
+        disp('Sensor front is detecting an obstacle');
+    end
+    if in_obstacle_r
+        disp('Sensor front right is detecting an obstacle');
+    end
+
+
+
+
 end
 
 Sensor = @scatter_sensor;
@@ -218,32 +255,107 @@ while qwe > 0
     ex_rotation = 0;
     % Break the loop if the 'q' key is pressed
     if keyPressed == 'w'
-        ex_rotation = 900;
-        yy = yy + 0.25;
-        scatter(xx,yy,'filled', 'b');
-        Sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+        ex_rotation =900; %rotation of the main body, does not operate by 360 degrees, very wierd
+        yy = yy + 0.25; %increments of movement when lcick button
+        scatter(xx,yy,'filled', 'b'); %plots the new bobby
+        Sensor(obstacles, i, sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation) %buh
+     
+  
+      in_obstacle_ex = false
+
+   for i = 1:length(obstacles)
+        if obstacles{i}(xx, yy)
+            in_obstacle_ex = true;
+        end
+        
+   end
+   if in_obstacle_ex == true
+            
+            yy = yy - 0.25
+            xx = xx
+            scatter(xx,yy, 'filled', 'b')
+             Sensor(obstacles, i, sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation) %buh
+        end
+
+
+    
+    
+    
     elseif keyPressed == 'a'
-        ex_rotation = 600;
+        ex_rotation =600;
         xx = xx - .25;
         scatter(xx,yy, 'filled', 'b');
-        Sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+        Sensor(obstacles, i, sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+      
+        in_obstacle_ex = false
+
+   for i = 1:length(obstacles)
+        if obstacles{i}(xx, yy)
+            in_obstacle_ex = true;
+        end
+       
+   end
+    if in_obstacle_ex == true
+            
+            yy = yy
+            xx = xx + 0.25
+            scatter(xx,yy, 'filled', 'b')
+             Sensor(obstacles, i, sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation) %buh
+        end
+
     elseif keyPressed == 'd'
-        ex_rotation = 0;
+        ex_rotation =0;
         xx = xx + .25;
         scatter(xx,yy, "filled", 'b');
-        Sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+        Sensor(obstacles, i , sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+        
+            in_obstacle_ex = false
+
+   for i = 1:length(obstacles)
+        if obstacles{i}(xx, yy)
+            in_obstacle_ex = true;
+        end
+        
+   end
+   if in_obstacle_ex == true
+            
+            yy = yy 
+            xx = xx - 0.25
+            scatter(xx,yy, 'filled', 'b')
+             Sensor(obstacles, i, sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation) %buh
+        end
+
     elseif keyPressed == 's'
-        ex_rotation = 300;
+        ex_rotation =0300;
         yy = yy - .25;
         scatter(xx,yy, "filled", 'b');
-        Sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+        Sensor(obstacles, i ,sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+         
+        
+
+ 
+        in_obstacle_ex = false
+
+   for i = 1:length(obstacles)
+        if obstacles{i}(xx, yy)
+            in_obstacle_ex = true;
+        end
+   
+   end
+        if in_obstacle_ex == true
+            
+            yy = yy + 0.25
+            xx = xx
+            scatter(xx,yy, 'filled', 'b')
+             Sensor(obstacles, i, sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation) %buh
+        end
+
+
     end
 
 
 
 end
-
-
 
 
 
