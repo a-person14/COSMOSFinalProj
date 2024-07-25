@@ -3,7 +3,14 @@ clear;
 %close all;
 clf
 
-% Define maze boundaries
+
+
+
+
+
+
+
+
 
 xmin = -10;
 xmax = 10;
@@ -13,7 +20,7 @@ vex = [0 0.5 -0.5 0; 0 -1/sqrt(3) -1/sqrt(3) 0]; % THe vessel's vertecies on the
 xx= 0
 yy= -10
 ex = [xx,yy] % the main robot
-ex_rotation = 45 % the robot's rotation
+ex_rotation = 0 % the robot's rotation
 ex_rad = deg2rad(ex_rotation) %converts robot's rotation in degrees to radians
 
 front = [xx + cos(ex_rotation), yy + sin(ex_rotation)]
@@ -34,8 +41,17 @@ sensorfy = yy + sensorfdist * sin(ex_rotation);
 sensorfrdist = 2
 sensorfrtheta = -45
 sensorfrx = xx + sensorfrdist * cos(sensorfrtheta+ ex_rotation);
-sensorfry = yy + sensorfdist * sin(sensorfrtheta+ ex_rotation);
+sensorfry = yy + sensorfrdist * sin(sensorfrtheta+ ex_rotation);
 % scatter(sensorfrx, sensorfry, 'filled', 'o')
+
+
+
+
+
+
+
+
+
 
 
 
@@ -128,12 +144,39 @@ else
     disp('(0, 0) is not in an obstacle.');
 end
 
+function scatter_sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+ 
 
- scatter(sensorfx,sensorfy, 'filled');
- scatter(sensorfrx,sensorfry, 'filled');
- scatter(sensorflx,sensorfly, 'filled');
-plot([xx,front(1)], [yy, front(2)], 'LineWidth', 2);
+ front = [xx + cos(ex_rotation), yy + sin(ex_rotation)];
 
+
+
+sensfldist = 2; %sensorfl offset from main body;
+sensfltheta = 45;  %sensorfl offset angle;
+sensorflx = xx + sensfldist * cos(sensfltheta + ex_rotation); %robot's sensow front left
+sensorfly = yy + sensfldist * sin(sensfltheta + ex_rotation);
+% scatter(sensorflx, sensorfly, "filled", "b") does not need to be used??
+
+
+sensorfdist = 2; %does sensor front
+sensorfx = xx + sensorfdist * cos(ex_rotation);
+sensorfy = yy + sensorfdist * sin(ex_rotation);
+% scatter(sensorfx, sensorfy, "filled" , 'g')
+
+
+sensorfrdist = 2;
+sensorfrtheta = -45;
+sensorfrx = xx + sensorfrdist * cos(sensorfrtheta+ ex_rotation);
+sensorfry = yy + sensorfrdist * sin(sensorfrtheta+ ex_rotation);
+% scatter(sensorfrx, sensorfry, 'filled', 'o')
+
+ scatter(sensorfx, sensorfy );
+ scatter(sensorfrx, sensorfry );
+ scatter(sensorflx, sensorfly);
+ plot([xx,front(1)], [yy, front(2)], 'LineWidth', 2);
+end
+
+Sensor = @scatter_sensor;
 
 
 wab = 0
@@ -172,37 +215,44 @@ hold on
 
 
 
-% qwe = 1
-% the code below makes the bobot move using WASD
-% while qwe > 0
-%     % Wait for a key press
-%     waitforbuttonpress;
-% 
-%     % Get the current character
-%     keyPressed = get(gcf, 'CurrentCharacter');
-% 
-%     % Display the key pressed
-%     disp(['Key pressed: ', keyPressed]);
-% 
-%     % Break the loop if the 'q' key is pressed
-%     if keyPressed == 'w'
-%         yy = yy + 1
-%         scatter(xx,yy,'filled', 'b')
-%     elseif keyPressed == 'a'
-%         xx = xx - 1
-%         scatter(xx,yy, 'filled', 'b')
-% 
-%     elseif keyPressed == 'd'
-%         xx = xx + 1
-%         scatter(xx,yy, "filled", 'b')
-%     elseif keyPressed == 's'
-%         yy = yy - 1
-%         scatter(xx,yy, "filled", 'b')
-%     end
-% 
-% 
-% 
-% end
+qwe = 1
+%the code below makes the bobot move using WASD
+while qwe > 0
+    % Wait for a key press
+    waitforbuttonpress;
+
+    % Get the current character
+    keyPressed = get(gcf, 'CurrentCharacter');
+
+    % Display the key pressed
+   
+    ex_rotation = 0;
+    % Break the loop if the 'q' key is pressed
+    if keyPressed == 'w'
+        ex_rotation = 900;
+        yy = yy + 0.25;
+        scatter(xx,yy,'filled', 'b');
+        Sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+    elseif keyPressed == 'a'
+        ex_rotation = 600;
+        xx = xx - .25;
+        scatter(xx,yy, 'filled', 'b');
+        Sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+    elseif keyPressed == 'd'
+        ex_rotation = 0;
+        xx = xx + .25;
+        scatter(xx,yy, "filled", 'b');
+        Sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+    elseif keyPressed == 's'
+        ex_rotation = 300;
+        yy = yy - .25;
+        scatter(xx,yy, "filled", 'b');
+        Sensor(sensfldist, sensfltheta, sensorfdist, sensorfrdist, sensorfx, sensorfy, sensorfrx, sensorfry, sensorflx, sensorfly, front ,xx ,yy, ex_rotation)
+    end
+
+
+
+end
 
 
 
