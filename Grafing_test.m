@@ -10,7 +10,7 @@ clf
 
 
 
-
+% the stuff below is all the variables and stuff
 
 xmin = -10;
 xmax = 10;
@@ -127,6 +127,24 @@ xlim([xmin, xmax]);
 ylim([ymin, ymax]);
 title('COSMOS 24 Cluster 11 Maze');
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %% Example of how to check if a point is in an obstacle
 % Check if (0, 0) is in an obstacle
 in_obstacle = false;
@@ -138,7 +156,7 @@ for i = 1:length(obstacles)
     end
 end
 
-if in_obstacle
+if in_obstacle %this tells that if an item is in a n obtancle, then it says that it is in an obstace
     disp('(0, 0) is in an obstacle.');
 else
     disp('(0, 0) is not in an obstacle.');
@@ -178,36 +196,7 @@ end
 
 Sensor = @scatter_sensor;
 
-
-wab = 0
-% while wab < 1
-%     if obstacles{i}(sensorfr(1), sensorfr(2))
-%         in_obstacle = true;
-%         break;
-%     end
-%     if in_obstacle == true
-%         disp("sensor front right is detecting obstical");
-%     end
-%     if obstacles{i}(sensorf(1), sensorf(2))
-%         in_obstacle = true;
-%         break;
-%     end
-%     if in_obstacle == true
-%         disp("sensor front  is detecting obstical");
-%     end
-%     if obstacles{i}(sensorflx, sensorfly)
-%         in_obstacle = true;
-%         break;
-%     end
-%     if in_obstacle == true
-%         disp("sensor front left is detecting obstical");
-%     end
-% 
-% end
 hold on
-
-
-
 
 
 
@@ -256,70 +245,6 @@ end
 
 
 
-% % % % % % % % % % %  THIS IS HOW TO ACCOUNT FOR ROTATION AND STUF
-% EHHEHEHAHAHAHAHAHAHAHAHHAHAHAHAHAhAHAHAHHAHAmUAhaHAHAHAHAHHAhAhAHAhAhAHA
-% % % % % % % % % % % % Main point coordinates
-% % % % % % % % % % % main_x = 0;
-% % % % % % % % % % % main_y = 0;   
-% % % % % % % % % % % 
-% % % % % % % % % % % % Main point rotation (angle in degrees)
-% % % % % % % % % % % rotation_angle = 45; % Example rotation angle
-% % % % % % % % % % % 
-% % % % % % % % % % % % Offset distance and angle from the main point
-% % % % % % % % % % % offset_distance = 2;
-% % % % % % % % % % % offset_angle = 30; % Angle in degrees
-% % % % % % % % % % % 
-% % % % % % % % % % % % Convert offset angle to radians
-% % % % % % % % % % % offset_angle_rad = deg2rad(offset_angle);
-% % % % % % % % % % % 
-% % % % % % % % % % % % Calculate subpoint coordinates
-% % % % % % % % % % % sub_x = main_x + offset_distance * cos(deg2rad(rotation_angle + offset_angle));
-% % % % % % % % % % % sub_y = main_y + offset_distance * sin(deg2rad(rotation_angle + offset_angle));
-% % % % % % % % % % % 
-% % % % % % % % % % % % Plot main point
-% % % % % % % % % % % plot(main_x, main_y, 'ro'); % Red circle for main point
-% % % % % % % % % % % 
-% % % % % % % % % % % hold on
-% % % % % % % % % % % 
-% % % % % % % % % % % % Plot subpoint
-% % % % % % % % % % % plot(sub_x, sub_y, 'bo'); % Blue circle for subpoint
-% % % % % % % % % % % 
-% % % % % % % % % % % % Add arrow to show the offset
-% % % % % % % % % % % quiver(main_x, main_y, sub_x - main_x, sub_y - main_y, 0, 'b', 'LineWidth', 1.5);
-% % % % % % % % % % % 
-% % % % % % % % % % % hold off
-% % % % % % % % % % % 
-% % % % % % % % % % % axis equal
 
 
 
-
-
-
-
-
-
-%% make the vessel in matlab, its a triangel
-% % % % % Define the vertices of the triangle centered at the origin
-% % % % triangle = [0 0.5 -0.5 0; 0 -1/sqrt(3) -1/sqrt(3) 0]; % Triangle vertices
-% % % % 
-% % % % % Define the rotation angle in degrees
-% % % % angle_deg = 30;
-% % % % angle_rad = deg2rad(angle_deg); % Convert angle to radians
-% % % % 
-% % % % % Create the rotation matrix
-% % % % R = [cos(angle_rad) -sin(angle_rad); sin(angle_rad) cos(angle_rad)];
-% % % % 
-% % % % % Rotate and translate the triangle
-% % % % rotated_triangle = R * triangle;
-% % % % x = rotated_triangle(1, :);
-% % % % y = rotated_triangle(2, :);
-% % % % 
-% % % % % Plot the rotated triangle as a scatter point
-% % % % figure;
-% % % % fill(x, y, 'b'); % 'b' for blue color, you can choose any color
-% % % % axis equal;
-% % % % grid on;
-% % % % title('Rotated Triangle Scatter Point');
-% % % % xlabel('X-axis');
-% % % % ylabel('Y-axis');
