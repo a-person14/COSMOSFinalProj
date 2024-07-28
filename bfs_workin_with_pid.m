@@ -82,8 +82,6 @@ xlim([xmin, xmax]);
 ylim([ymin, ymax]);
 title('COSMOS 24 Cluster 11 Maze');
 
-%%
-clc
 
 h=1;
 x0=start_point(1);
@@ -157,7 +155,7 @@ function path = bfs(pos_arr, obstacles, start, endpoint, h, v, t, esti)
             x_ind = round(5 * next(i, 1) + 51);
             y_ind = round(5 * next(i, 2) + 51);
             if x_ind > 0 && x_ind <= rows && y_ind > 0 && y_ind <= cols
-                if ~detection(next(i, 1), next(i, 2), obstacles) && ~visited(x_ind, y_ind)
+                if ~detection(round(next(i, 1)), round(next(i, 2)), obstacles) && ~visited(x_ind, y_ind)
                     queue{end + 1} = next(i, :);
                     visited(x_ind, y_ind) = true;
                     parent(x_ind, y_ind, 1) = current(1);
@@ -215,6 +213,7 @@ for i=1:size(path_to_goal,1)
 end
 
 
+
 %pid code
 Setpoints = path_to_goal
 %all x,y positions and omega
@@ -227,8 +226,7 @@ Vx = [1];
 Vy = [1];
 Omega = [0];
 
-%step size
-h = .1;
+h=0.1
 
 %PID x,y gains
 Kpx = 4; Kpy = 2.5; Kptheta = 0.02;%4,5,4 
