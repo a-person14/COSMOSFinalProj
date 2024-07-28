@@ -213,3 +213,93 @@ path_to_goal=efficiency(path_curr)
 for i=1:size(path_to_goal,1)
     plot(path_to_goal(i,1),path_to_goal(i,2),'*','MarkerSize',12);
 end
+
+
+%pid code
+Setpoints = path_to_goal
+%all x,y positions and omega
+Px = [0];
+Py = [-10];
+theta = [pi/2];
+
+%Velocities (can take this out)
+Vx = [1];
+Vy = [1];
+Omega = [0];
+
+%step size
+h = .1;
+
+%PID x,y gains
+Kpx = 4; Kpy = 2.5; Kptheta = 0.02;%4,5,4 
+Kix = .01; Kiy = .1; Kitheta = .05;
+Kdx = .01; Kdy = .01; Kdtheta = .04;
+
+%init integral+derivatives
+xIntegral = 0; yIntegral = 0; thetaIntegral = 0;
+xDerivative = 0; yDerivative = 0; thetaDerivative = 0;
+
+%xcontroller
+for i = 1:length(Setpoints)
+    %error initialization
+    xIntegral = 0; yIntegral = 0; thetaIntegral = 0;
+    xDerivative = 0; yDerivative = 0; thetaDerivative = 0;
+    xError = Setpoints(i,1) - Px(1);
+    yError = Setpoints(i,2) - Py(1);
+    k=0;
+    thetaError = atan2(yError, xError) - theta(1);
+    while norm([xError,yError]) > .08 %while loop doesnt work (want to do based on if error is < .0001, move on or do it w time?)
+        k = k+1;
+        xIntegral = xIntegral + (Setpoints(i,1) - Px(k)) * h; %integral of the error over time (Setpoints(i,1) - Px(k) here because i wanted to keep prev error in derivation)
+        xDerivative = ((Setpoints(i,1) - Px(k)) - xError) / h; %derivative of error in regards to time
+        xError = Setpoints(i,1) - Px(k);
+    
+        %calc new velo
+        Vx(k+1) = Kpx*xError + Kix * xIntegral + Kdx*xDerivative; %why is it Kpx*xderivative?
+        
+        %calc new pos
+        Px(k+1) = Px(k) + h*Vx(k)*cos(theta(k));
+    
+    
+        yIntegral = yIntegral + (Setpoints(i,2) - Py(k)) * h;
+        yDerivative = ((Setpoints(i,2) - Py(k)) - yError) / h; %(curr err - prev err) / step size
+        yError = Setpoints(i,2) - Py(k);
+    
+        %calc new velo
+        Vy(k+1) = Kpy*yError + Kiy * yIntegral + Kdy*yDerivative;
+        
+        %calc new pos
+        Py(k+1) = Py(k) + h*Vy(k)*sin(theta(k));
+
+        %calc theta
+        thetaIntegral = thetaIntegral + (atan2(yError, xError) - theta(k)) * h;
+        thetaDerivative = ((atan2(yError, xError) - theta(k)) - thetaError) / h;
+        thetaError = atan2(yError, xError) - theta(k);
+        
+        %calc omega
+        Omega(k+1) = Kptheta*thetaError;% + Kitheta*thetaIntegral + Kdtheta*thetaDerivative;
+
+        %calc new theta
+        theta(k+1) = theta(k)+h*Omega(k);
+
+        plot(Px(k+1),Py(k+1), '.' ,'MarkerSize',5); drawnow
+        hold on
+    end 
+     %plot(Px, "green")
+     %hold on
+     %plot(Py, "blue")
+     %plot(Px,Py)
+     %hold on
+     Px = [Px(end)];
+     Py = [Py(end)];
+     Vx = [Vx(end)];
+     Vy = [Vy(end)];
+     Omega = [Omega(end)];
+     theta = [theta(end)];
+     % xlabel("iterations")
+     % ylabel("x or y position")
+     % hold on
+     %xlim([-5,10])
+     %ylim([-10,-8])
+
+end
