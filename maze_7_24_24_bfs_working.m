@@ -185,12 +185,29 @@ function path = bfs(pos_arr, obstacles, start, endpoint, h, v, t, esti)
 
 end
 
+function path_effic = efficiency (path)
+    path_effic_x=path(1,:);
+    for i=2:(size(path,1)-1)
+        if (round(path(i-1,2))~=round(path(i+1,2)))
+            path_effic_x = [path_effic_x; path(i, :)];
+        end
+    end
+    path_effic_x = [path_effic_x; path(end, :)];
+    path_effic=path_effic_x(1,:);
+    for i=2:(size(path_effic_x,1)-1)
+        if (round(path_effic_x(i-1,1))~=round(path_effic_x(i+1,1)))
+            path_effic = [path_effic; path_effic_x(i, :)];
+        end
+    end
+    path_effic = [path_effic; path(end, :)];
+end
+
 
 
 start_point = [0, -10];
 end_point = [0, 10];
-path_to_goal = bfs(pos_arr, obstacles, start_point, end_point,h,v,t);
-
+path_curr = bfs(pos_arr, obstacles, start_point, end_point,h,v,t);
+path_to_goal=efficiency(path_curr)
 
 
 for i=1:size(path_to_goal,1)
