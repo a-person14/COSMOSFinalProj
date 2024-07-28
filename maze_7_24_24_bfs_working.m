@@ -152,7 +152,7 @@ function path = bfs(pos_arr, obstacles, start, endpoint, h, v, t, esti)
             found = true;
             break;
         end
-        next = neighbors(current(1), current(2), h, v, t)
+        next = neighbors(current(1), current(2), h, v, t);
         for i = 1:size(next, 1)
             x_ind = round(5 * next(i, 1) + 51);
             y_ind = round(5 * next(i, 2) + 51);
@@ -174,8 +174,6 @@ function path = bfs(pos_arr, obstacles, start, endpoint, h, v, t, esti)
         node = [endpoint(1),endpoint(2)]; 
         while ~isequal(node, round(start)) 
             path = [node; path]; 
-            node(1)
-            node(2)
             if node(1) >= -10 && node(1) <= 10 && node(2) >= -10 && node(2) <= 10
                node = squeeze(parent(round(5*node(1)+51), round(5*node(2)+51), :))'; 
             end
@@ -194,7 +192,7 @@ end_point = [0, 10];
 path_to_goal = bfs(pos_arr, obstacles, start_point, end_point,h,v,t);
 
 
-%%
+
 for i=1:size(path_to_goal,1)
     plot(path_to_goal(i,1),path_to_goal(i,2),'*','MarkerSize',12);
 end
