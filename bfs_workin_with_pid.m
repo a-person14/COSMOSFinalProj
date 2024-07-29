@@ -111,15 +111,6 @@ function in_obstacle = detection(x, y, obstacles)
     end
 end
 
-function repeat = repeatinarr(x, y, arr, esti)
-    repeat = false;
-    for i = 1:size(arr, 2) 
-        if abs(arr(1, i)-x)<esti && abs(arr(2, i)-y)<esti
-            repeat = true;
-            break; 
-        end
-    end
-end
 
 function neigh = neighbors (posx,posy,h,v,t)
     pos_x_for=posx + h*v*cos(t); 
