@@ -82,25 +82,7 @@ xlim([xmin, xmax]);
 ylim([ymin, ymax]);
 title('COSMOS 24 Cluster 11 Maze');
 
-
-
-%%
-clc
-
-h=1;
-x0=start_point(1);
-y0=start_point(2);
-t0=0;
-goalx=end_point(1);
-goaly=end_point(2);
-pos_arr=zeros(3,1);
-pos_arr(1,1)=x0;
-pos_arr(2,1)=y0;
-pos_arr(3,1)=t0;
-v=1;
-t=t0;
-esti=10^-2;
-
+%Detect if there is an obstacle or not at position (x,y)
 function in_obstacle = detection(x, y, obstacles)
     in_obstacle = false;
     if round(x) == 0 && round(y) == 10
@@ -115,16 +97,7 @@ function in_obstacle = detection(x, y, obstacles)
     end
 end
 
-function repeat = repeatinarr(x, y, arr, esti)
-    repeat = false;
-    for i = 1:size(arr, 2) 
-        if abs(arr(1, i)-x)<esti && abs(arr(2, i)-y)<esti
-            repeat = true;
-            break; 
-        end
-    end
-end
-
+%Finds the neighbors given the point (x,y)
 function neigh = find_neighbors (posx,posy,h,v,t)
     pos_x_for=posx + h*v*cos(t); 
     pos_y_for=posy + h*v*sin(t);
@@ -137,7 +110,7 @@ function neigh = find_neighbors (posx,posy,h,v,t)
     neigh = [[pos_x_for,pos_y_for];[pos_x_left,pos_y_left];[pos_x_right,pos_y_right];[pos_x_back,pos_y_back]];
 end
 
-
+%Executes the DFS Path-Finding Algorithm
 function  path = dfs(startNode, endNode, obstacles)
     path = [];
     stack = startNode;
@@ -181,6 +154,7 @@ function  path = dfs(startNode, endNode, obstacles)
     end
 end
 
+%Condenses all the path points into key setpoints
 function path_effic = efficiency (path)
     path_effic_x=path(1,:);
     for i=2:(size(path,1)-1)
@@ -198,15 +172,14 @@ function path_effic = efficiency (path)
     path_effic = [path_effic; path(end, :)];
 end
 
-
+%Find the path
 path_goal=dfs(start_point, end_point, obstacles);
 path_goal_e=efficiency(path_goal);
 
-
+%Plot the setpoints
 for i=1:size(path_goal_e,1)
     plot(path_goal_e(i,1),path_goal_e(i,2),'*','MarkerSize',12);
 end
-
 
 %pid code
 Setpoints = path_goal_e;
