@@ -82,21 +82,7 @@ xlim([xmin, xmax]);
 ylim([ymin, ymax]);
 title('COSMOS 24 Cluster 11 Maze');
 
-
-h=1;
-x0=start_point(1);
-y0=start_point(2);
-t0=0;
-goalx=end_point(1);
-goaly=end_point(2);
-pos_arr=zeros(3,1);
-pos_arr(1,1)=x0;
-pos_arr(2,1)=y0;
-pos_arr(3,1)=t0;
-v=1;
-t=t0;
-esti=10^-2;
-
+%Detect if there is an obstacle or not at position (x,y)
 function in_obstacle = detection(x, y, obstacles)
     in_obstacle = false;
     if round(x) == 0 && round(y) == 10
@@ -111,7 +97,7 @@ function in_obstacle = detection(x, y, obstacles)
     end
 end
 
-
+%Finds the neighbors given the point (x,y)
 function neigh = neighbors (posx,posy,h,v,t)
     pos_x_for=posx + h*v*cos(t); 
     pos_y_for=posy + h*v*sin(t);
@@ -124,7 +110,8 @@ function neigh = neighbors (posx,posy,h,v,t)
     neigh = [[pos_x_for,pos_y_for];[pos_x_left,pos_y_left];[pos_x_right,pos_y_right];[pos_x_back,pos_y_back]];
 end
 
-function path = bfs(pos_arr, obstacles, start, endpoint, h, v, t, esti)
+%Executes the BFS Path-Finding Algorithm
+function path = bfs(obstacles, start, endpoint)
     rows = 101;
     cols = 101;
     queue = {start};
@@ -141,7 +128,7 @@ function path = bfs(pos_arr, obstacles, start, endpoint, h, v, t, esti)
             found = true;
             break;
         end
-        next = neighbors(current(1), current(2), h, v, t);
+        next = neighbors(current(1), current(2), 1, 1, 0);
         for i = 1:size(next, 1)
             x_ind = round(5 * next(i, 1) + 51);
             y_ind = round(5 * next(i, 2) + 51);
@@ -151,7 +138,7 @@ function path = bfs(pos_arr, obstacles, start, endpoint, h, v, t, esti)
                     visited(x_ind, y_ind) = true;
                     parent(x_ind, y_ind, 1) = current(1);
                     parent(x_ind, y_ind, 2) = current(2);
-                    plot(next(i, 1), next(i, 2), '^', 'MarkerSize', 12); drawnow;
+                    plot(next(i, 1), next(i, 2), 'square', 'MarkerSize', 12); drawnow;
                     hold on;
                 end
             end
@@ -174,6 +161,7 @@ function path = bfs(pos_arr, obstacles, start, endpoint, h, v, t, esti)
 
 end
 
+%Condenses all the path points into key setpoints
 function path_effic = efficiency (path)
     path_effic_x=path(1,:);
     for i=2:(size(path,1)-1)
@@ -192,21 +180,19 @@ function path_effic = efficiency (path)
 end
 
 
-
+%Find the path
 start_point = [0, -10];
 end_point = [0, 10];
-path_curr = bfs(pos_arr, obstacles, start_point, end_point,h,v,t);
-path_to_goal=efficiency(path_curr)
+path_curr = bfs(obstacles, start_point, end_point);
+path_to_goal=efficiency(path_curr);
 
-
+%Plot the setpoints
 for i=1:size(path_to_goal,1)
     plot(path_to_goal(i,1),path_to_goal(i,2),'*','MarkerSize',12);
 end
 
-
-
 %pid code
-Setpoints = path_to_goal
+Setpoints = path_to_goal;
 %all x,y positions and omega
 Px = [0];
 Py = [-10];
@@ -217,7 +203,7 @@ Vx = [1];
 Vy = [1];
 Omega = [0];
 
-h=0.1
+h=0.1;
 
 %PID x,y gains
 Kpx = 4; Kpy = 2.5; Kptheta = 0.02;%4,5,4 
