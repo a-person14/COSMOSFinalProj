@@ -122,19 +122,23 @@ add neighbour to OPEN
 %}
 
 function path = findPath(startNode, endNode, OpenNodes, ClosedNodes, Gcosts, Fcosts, Parents, obstacles) %input coordinates 
-    OpenNodes = [OpenNodes; startNode]
+    OpenNodes = [OpenNodes; startNode];
+    node_ind = 1;
     while ~isempty(OpenNodes)
-        CurrNode = [OpenNodes(1, 1), OpenNodes(1, 2)] 
+        CurrNode = [OpenNodes(1, 1), OpenNodes(1, 2)]; 
+        node_ind=1
         for i = 1:size(OpenNodes, 1) %taking the one with the lowest cost
-            if Fcosts(OpenNodes(i, 1), OpenNodes(i,2)) < Fcosts(CurrNode) | Fcosts(OpenNodes(i, 1), OpenNodes(i,2)) == Fcosts(OpenNodes(1, 1), OpenNodes(1, 2))  
+            if Fcosts(OpenNodes(i, 1), OpenNodes(i,2)) < Fcosts(CurrNode(1), CurrNode(2)) || Fcosts(OpenNodes(i, 1), OpenNodes(i,2)) == Fcosts(CurrNode(1), CurrNode(2))  
                 if h_cost([OpenNodes(i, 1), OpenNodes(i,2)]) < h_cost([OpenNodes(1, 1), OpenNodes(1, 2)])
-                    CurrNode = [OpenNodes(i, 1), OpenNodes(i, 2)]
+                    CurrNode = [OpenNodes(i, 1), OpenNodes(i, 2)];
+                    node_ind = i;
                 end
             end
         end
 
-        OpenNodes(1, :) = [];
+        OpenNodes(node_ind, :) = [];
         ClosedNodes = [ClosedNodes; CurrNode];
+        ClosedNodes = unique(ClosedNodes, "rows");
 
         if CurrNode == endNode
             path = retracePath(startNode, endNode, Parents)
@@ -145,25 +149,25 @@ function path = findPath(startNode, endNode, OpenNodes, ClosedNodes, Gcosts, Fco
         for indx = 1:size(listNeigh, 1)
             neighbor = listNeigh(indx, :)
             coords = matrixToCoords(neighbor)
-            if detection(coords(1), coords(2), obstacles) | ismember(neighbor, ClosedNodes)
-               hold on
+            if detection(coords(1), coords(2), obstacles) || ismember(neighbor, ClosedNodes, "rows")
                "closed/obstacle"
                continue 
             end
 
             neighborPathCost = Gcosts(CurrNode(1), CurrNode(2))+getDistance(CurrNode, neighbor)
 
-            if neighborPathCost < getDistance(neighbor, startNode) | ~ismember(neighbor, OpenNodes, "rows")
+            if neighborPathCost < getDistance(neighbor, startNode) || ~ismember(neighbor, OpenNodes, "rows") 
                 coords = matrixToCoords(neighbor)
-                plot(coords, ".", 'MarkerSize', 5)
+                plot(coords(1), coords(2), ".", 'MarkerSize', 5)
                 hold on
                 Gcosts(neighbor(1), neighbor(2)) = neighborPathCost;
-                Fcosts(neighbor(1), neighbor(2)) = neighborPathCost + getDistance(neighbor, endNode);
+                Hcosts(neighbor(1), neighbor(2)) = getDistance(neighbor, endNode);
+                Fcosts(neighbor(1), neighbor(2)) = neighborPathCost+getDistance(neighbor, endNode);
                 Parents(neighbor(1), neighbor(2), :) = CurrNode;
-            end
 
-            if ~ismember(neighbor, OpenNodes, "rows")
-                OpenNodes = [OpenNodes; neighbor]
+                if ~ismember(neighbor, OpenNodes, "rows")
+                    OpenNodes = [OpenNodes; neighbor];
+                end
             end
         end
     end
@@ -174,7 +178,7 @@ function Path = retracePath(startNode, endNode, Parents)
     Path = [];
 
     while currentNode ~= endNode
-        Path = [path, matriToCoords(Parents(startNode))];
+        Path = [path, matrixToCoords(Parents(startNode))];
     end
 end
 
@@ -194,7 +198,7 @@ end
 
 function distance = getDistance(NodeA, NodeB)
     xDist = abs(NodeB(1) - NodeA(1));
-    yDist = abs(NodeA(1) - NodeB(1));
+    yDist = abs(NodeB(2) - NodeA(2));
 
     if xDist > yDist
         distance = 14*yDist+10*(xDist-yDist);
@@ -205,7 +209,7 @@ end
 
 function h_cost = h_cost(CurrNode)
     EndNode = [0,10];
-    h_cost = round(10*sqrt((CurrNode(2)-EndNode(1))^2+(CurrNode(2)-EndNode(2)^2)));
+    h_cost = round(10*sqrt((CurrNode(1)-EndNode(1))^2+(CurrNode(2)-EndNode(2))^2));
 end
 
 function in_obstacle = detection(x, y, obstacles) %use in neightbors
